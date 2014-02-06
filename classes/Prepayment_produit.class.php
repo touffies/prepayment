@@ -55,6 +55,18 @@ class Prepayment_produit extends Baseobj {
 	}
 
     /**
+     * Chargé un objet Prepayment_produit en fonction de l'identifiant de prepayment
+     *
+     * @param int $prepayment_id  Identifiant de prepayment
+     *
+     * @return objet Un objet Prepayment_produit
+     */
+    function charger($prepayment_id){
+
+        return $this->getVars("SELECT * FROM $this->table WHERE prepayment_id=" . intval($prepayment_id));
+    }
+
+    /**
      * Chargé un objet Prepayment_produit en fonction de l'identifiant d'un produit
      *
      * @param int $produit_id  Identifiant d'un produit
