@@ -75,8 +75,7 @@ class Prepayment_produit extends Baseobj {
 
         $query = "CREATE TABLE IF NOT EXISTS `$this->table` (
 			 `prepayment_id` INT UNSIGNED NOT NULL,
-			 `produit_id` INT UNSIGNED NOT NULL,
-			PRIMARY KEY (  `prepayment_id` )
+			 `produit_id` INT UNSIGNED NOT NULL
 			);";
 
         $this->query($query);
