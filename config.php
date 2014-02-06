@@ -35,4 +35,7 @@ define("PREPAYMENT_MINIMUM", 0); // Minimum autorisé pour le compte client
 
 // Nom du module à utiliser si on veut avoir aucun frais de livraison
 define("PREPAYMENT_LIVRAISON_ZERO", "livraison_zero");
+
+define("PREPAYMENT_URL_SUCCES", "moncompte");
+define("PREPAYMENT_URL_ERREUR", "commande");
 ?>

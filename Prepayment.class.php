@@ -283,11 +283,13 @@ class Prepayment extends PluginsPaiements {
             }
 
             ActionsModules::instance()->appel_module("confirmation", $commande);
-            header("Location: " . urlfond("prepaiement"));
+            $fond_succes = defined('PREPAYMENT_URL_SUCCES') ? PREPAYMENT_URL_SUCCES : "moncompte";
+            header("Location: " . urlfond($fond_succes));
             exit;
 
         } else {
-            header("Location: " . urlfond("prepaiementerr"));;
+            $fond_erreur = defined('PREPAYMENT_URL_ERREUR') ? PREPAYMENT_URL_ERREUR : "commande";
+            header("Location: " . urlfond($fond_erreur));
             exit;
         }
     }
@@ -351,7 +353,7 @@ class Prepayment extends PluginsPaiements {
                         $debit = $art->quantite;
                         break;
                     default:
-                        $debit = $art->produit->prix - $port;  + $port; // On déduit aussi les frais de port (1 seul fois)
+                        $debit = $art->produit->prix - $port; // On déduit aussi les frais de port (1 seul fois)
                         $port = 0;
                 }
 
@@ -369,7 +371,7 @@ class Prepayment extends PluginsPaiements {
         }
 
         // Substitutions
-        $texte = str_replace("#PREPAYMENT_EXCLUSION", $exclusion, $texte);
+        $texte = str_replace("#EXCLUSION", $exclusion, $texte);
 
         return $texte;
     }
