@@ -32,13 +32,14 @@ include_once __DIR__ . "/classes/Prepayment_commande.class.php";
 
 // Classes de Thelia
 include_once __DIR__ . "/../../../classes/PluginsPaiements.class.php";
-/*include_once __DIR__ . "/../../../classes/Variable.class.php";
+include_once __DIR__ . "/../../../classes/Caracteristiquedesc.class.php";
 include_once __DIR__ . "/../../../classes/Produit.class.php";
 include_once __DIR__ . "/../../../classes/Produitdesc.class.php";
-include_once __DIR__ . "/../../../classes/Transzone.class.php";
+include_once __DIR__ . "/../../../classes/Client.class.php";
 include_once __DIR__ . "/../../../classes/Modules.class.php";
-include_once __DIR__ . "/../../../classes/Mail.class.php";
-include_once __DIR__ . "/../../../classes/Messagedesc.class.php";*/
+include_once __DIR__ . "/../../../classes/Caracval.class.php";
+include_once __DIR__ . "/../../../classes/Venteprod.class.php";
+include_once __DIR__ . "/../../../classes/Devise.class.php";
 
 // Fonctions de thelia
 include_once __DIR__ . "/../../../fonctions/lire.php";
@@ -128,15 +129,14 @@ class Prepayment extends PluginsPaiements {
         foreach($_SESSION['navig']->panier->tabarticle as &$art) {
 
             // On recherche toutes les caractéristiques de prepayment
-            $prepayment = new Prepayment();
-            $query = "SELECT * FROM $prepayment->table";
-            $resul = $prepayment->query($query);
-            while($resul && $row = $prepayment->fetch_object($resul)){
+            $query = "SELECT * FROM $this->table";
+            $resul = $this->query($query);
+            while($resul && $prepayment = $this->fetch_object($resul)){
                 $caracval = new Caracval();
-                if($caracval->charger($art->produit->id, $row->caracteristique_id))
+                if($caracval->charger($art->produit->id, $prepayment->caracteristique_id))
                 {
                     $prepayment_commande = new Prepayment_commande();
-                    $prepayment_commande->prepayment_id = $row->id;
+                    $prepayment_commande->prepayment_id = $prepayment->id;
                     $prepayment_commande->commande_id = $commande->id;
                     $prepayment_commande->client_id = $commande->client;
                     $prepayment_commande->type = defined('PREPAYMENT_CREDIT') ? PREPAYMENT_CREDIT : 1;
@@ -173,17 +173,6 @@ class Prepayment extends PluginsPaiements {
             $prepayment_produit->prepayment_id = $select_prepayment;
             $prepayment_produit->add();
         }
-    }
-
-    /**
-     * Méthode appelée lors du changement de statut d'une commande
-     *
-     * @param $commande Objet de type commande
-     *
-     * @return none
-     */
-    public function statut($commande)
-    {
     }
 
     /**
@@ -311,6 +300,9 @@ class Prepayment extends PluginsPaiements {
             case 'transport':
                 return $this->boucleTransport($texte, $args);
                 break;
+
+            default:
+                return $this->boucleDefaut($texte, $args);
         }
     }
 
@@ -444,6 +436,20 @@ class Prepayment extends PluginsPaiements {
         // Substitutions
         $texte = str_replace("#ID", $id, $texte);
         $texte = str_replace("#EXCLUSION", "", $texte);
+
+        return $texte;
+    }
+
+    /**
+     * Boucle permettant d'afficher le nombre de crédit d'un client.
+     *
+     * @param $texte
+     * @param $args
+     *
+     * @return string
+     */
+    private function boucleDefaut($texte, $args)
+    {
 
         return $texte;
     }
