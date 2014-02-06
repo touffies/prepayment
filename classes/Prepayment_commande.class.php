@@ -104,7 +104,7 @@ class Prepayment_commande extends Baseobj {
     public function credit_total($client_id, $prepayment_id){
 
         $type_credit = defined('PREPAYMENT_CREDIT') ? PREPAYMENT_CREDIT : 1;
-        $query = "SELECT co.id, SUM(CASE WHEN pc.type = ".$type_credit." THEN +pc.valeur ELSE -pc.valeur END) AS Total FROM ".self::TABLE." pc INNER JOIN ".Commande::TABLE." co ON co.id = pc.commande_id WHERE pc.client_id = $client_id AND pc.prepayment_id = $prepayment_id AND co.statut = '2'";
+        $query = "SELECT co.id, SUM(CASE WHEN pc.type = ".$type_credit." THEN +pc.valeur ELSE -pc.valeur END) AS Total FROM $this->table pc INNER JOIN ".Commande::TABLE." co ON co.id = pc.commande_id WHERE pc.client_id = $client_id AND pc.prepayment_id = $prepayment_id AND co.statut = '2'";
         $res = $this->query_liste($query);
         return intval($res[0]->Total);
     }
