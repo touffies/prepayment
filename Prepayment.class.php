@@ -163,12 +163,14 @@ class Prepayment extends PluginsPaiements {
 
         // On ne peut associer qu'un prepayment
         if($prepayment_produit->charger_produit($produit->id))
-            $prepayment_produit->delete();
+            $prepayment_produit->delete_produit($produit->id);
+
 
         // Une caractéristique de prépaiement est séléctionnée
         if (intval($select_prepayment) > 0)
         {
             // On ajoute une entrée
+            $prepayment_produit = new Prepayment_produit();
             $prepayment_produit->produit_id = $produit->id;
             $prepayment_produit->prepayment_id = $select_prepayment;
             $prepayment_produit->add();
@@ -452,6 +454,11 @@ class Prepayment extends PluginsPaiements {
         $client_id = lireTag($args, "client", "int");
         $prepayment_id = lireTag($args, "prepayment", "int");
         $caracteristique_id = lireTag($args, "caracteristique", "int");
+        $module = lireTag($args, "module", "string"); 
+
+        // Inclusion dans la boucle Paiement
+        if($module && $module != self::MODULE)
+            return;
 
         // Préparation de la requète
         $where = "";

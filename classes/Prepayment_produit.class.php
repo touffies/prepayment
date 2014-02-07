@@ -95,6 +95,17 @@ class Prepayment_produit extends Baseobj {
     }
 
     /**
+     * Méthode pour supprimer une ligne en utilisant l'identifiant d'un produit
+     *
+     * @param int $produit_id  Identifiant d'un produit
+     *
+     * @return none
+     */
+    function delete_produit($produit_id){
+        return $this->query("DELETE FROM `$this->table` where produit_id=" . intval($produit_id));
+    }
+
+    /**
      * Méthode appelée quand on désactive le plugin
      *
      * @return none
