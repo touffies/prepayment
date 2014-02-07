@@ -451,9 +451,19 @@ class Prepayment extends PluginsPaiements {
     private function boucleDefaut($texte, $args)
     {
 
+
         return $texte;
     }
 
+    /**
+     * Méthode appelée après confirmation du paiement
+     *
+     * @return none
+     */
+    function mail($commande)
+    {
+        // Ne rien faire
+    }
 
      /**
      * Méthode appelée quand on désactive le plugin
