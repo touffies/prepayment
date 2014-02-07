@@ -288,9 +288,6 @@ class Prepayment extends PluginsPaiements {
 
         $boucle = strtolower(lireTag($args, 'boucle'));
 
-        // Sécurité
-        if(empty($boucle)) return;
-
         switch($boucle)
         {
             case 'paiement':
@@ -450,13 +447,64 @@ class Prepayment extends PluginsPaiements {
      */
     private function boucleDefaut($texte, $args)
     {
+        // Récupération des arguments
+        $id = lireTag($args, "id", "int");
+        $client_id = lireTag($args, "client", "int");
+        $prepayment_id = lireTag($args, "prepayment", "int");
+        $caracteristique_id = lireTag($args, "caracteristique", "int");
 
+        // Préparation de la requète
+        $where = "";
+        $return = "";
 
-        return $texte;
+        if (intval($id) > 0) $where .= " AND pre_cmd.id=" . intval($id);
+        if (intval($client_id) > 0) $where .= " AND pre_cmd.client_id=" . intval($client_id);
+        if (intval($prepayment_id) > 0) $where .= " AND pre_cmd.prepayment_id=" . intval($prepayment_id);
+        if (intval($caracteristique_id) > 0) $where .= " AND pre_cmd.prepayment_id IN (SELECT prepayment_id FROM ".Prepayment::TABLE." WHERE caracteristique_id=" . intval($caracteristique_id).")";
+
+        // Requète
+        $prepayment_commande = new Prepayment_commande();
+        $query = "SELECT DISTINCT(pre_cmd.client_id), pre_cmd.prepayment_id FROM $prepayment_commande->table AS pre_cmd WHERE 1=1 $where";
+        $res_prepayment_commande = $prepayment_commande->query_liste($query);
+
+        // On loupe car un client pourrait avoir plusieurs type de prépaiement
+        foreach($res_prepayment_commande as $pre_cmd) {
+
+            // Calcul du total de crédit
+            $total = $prepayment_commande->credit_total($pre_cmd->client_id, $pre_cmd->prepayment_id);
+
+            if($this->charger_id($pre_cmd->prepayment_id))
+            {
+                $caracteristiquedesc = new Caracteristiquedesc($this->caracteristique_id);
+
+                $valeur = $total;
+
+                // Dans le cas d'un prépaiement de type prix
+                $type_prix = defined('PREPAYMENT_TYPE_PRIX') ? PREPAYMENT_TYPE_PRIX : 0;
+                if($this->type == $type_prix){
+                    $devise = new Devise();
+                    $devise->charger(1);
+                    $valeur = formatter_somme($total) . " " . $devise->symbole;
+                }
+
+                // Cache
+                $tmp = $texte;
+
+                // Substitutions
+                $tmp = str_replace("#LABEL", $caracteristiquedesc->titre, $tmp);
+                $tmp = str_replace("#CREDIT", intval($total) > 0 ? "$valeur" : "-$valeur", $tmp);
+
+                $return .= $tmp;
+            }
+        }
+
+        return $return;
     }
 
     /**
      * Méthode appelée après confirmation du paiement
+     *
+     * @param $commande Objet de type commande
      *
      * @return none
      */
