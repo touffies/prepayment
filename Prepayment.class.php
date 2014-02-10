@@ -371,7 +371,6 @@ class Prepayment extends PluginsPaiements {
     /**
      * Boucle permettant de filtrer le type de transport à proposer au client
      * en fonction du type de produit dans le panier.
-     * Par défaut, on exclut tous les types de transport... en revanche, si on n'a pas
      *
      * @param $texte
      * @param $args
@@ -454,7 +453,7 @@ class Prepayment extends PluginsPaiements {
         $client_id = lireTag($args, "client", "int");
         $prepayment_id = lireTag($args, "prepayment", "int");
         $caracteristique_id = lireTag($args, "caracteristique", "int");
-        $module = lireTag($args, "module", "string"); 
+        $module = lireTag($args, "module", "string");
 
         // Inclusion dans la boucle Paiement
         if($module && $module != self::MODULE)
