@@ -21,8 +21,11 @@ Pour installer ce plugin, il vous faut :
 
  1. Installer le plugin `prepayment` dans le dossier `/client/plugins/` de votre site.
  2. Activer ce plugin dans le menu `Configuration -> Activation des plugins`.
- 3. Se rendre dans `Modules -> Module de prépaiement -> Connection au site` du site afin d'associer une caractéristique à un prépaiement.
-
+ 3. Se rendre dans `Configuration -> Gestion des caractéristiques` pour ajouter une nouvelle caractéristique. (Exemple : Nombre de films)
+ 3. Se rendre dans `Modules -> Module de prépaiement -> Connection au site` du site afin d'associer cette caractéristique à un prépaiement.
+ 4. Ajouter une nouvelle rubrique `Recharge de crédit` et lui associer la caractéristique sélectionnée à l'étape précédente.
+ 5. Créer des produits dans cette rubrique et renseignez le champ pour cette caractéristique. (C'est cette valeur qui sera utilisée pour créditer ou débiter votre compte de prépaiement)
+ 6. Pour finir, si vous voulez qu'un client puisse payer un produit en utilisant son compte prépayé, vous devez sélectionner la caractéristique de `Prépaiement` à la création du produit.
 
 LES BOUCLES
 ---------
