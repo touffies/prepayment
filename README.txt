@@ -162,6 +162,7 @@ vous pouvez modifier le montant minimum, en modifiant la valeur de la constante 
 CHANGELOG
 ---------
 
+- **1.0.2** (11/02/2014) - Ajout d'une constante pour filtrer les statuts (Non Payé et Annulé)
 - **1.0.1** (10/02/2014) - Ajout du fichier Readme.md (Markdown)
 - **1.0.0** (06/02/2014) - Première version du plugin
 
