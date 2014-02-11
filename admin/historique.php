@@ -30,7 +30,8 @@
             $client = new Client($pre_commande->client_id);
             $commande = new Commande($pre_commande->commande_id);
 
-            if($commande->statut == '2')
+            $statut_exclusion = defined('PREPAYMENT_STATUT_EXCLUSION') ? PREPAYMENT_STATUT_EXCLUSION : '1,5';
+            if(!in_array($commande->statut, explode(',', $statut_exclusion)))
             {
                 $prepayment = new Prepayment($pre_commande->prepayment_id);
                 $caracteristiquedesc = new Caracteristiquedesc($prepayment->caracteristique_id);

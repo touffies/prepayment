@@ -38,4 +38,7 @@ define("PREPAYMENT_LIVRAISON_ZERO", "livraison_zero");
 
 define("PREPAYMENT_URL_SUCCES", "merci");
 define("PREPAYMENT_URL_ERREUR", "regret");
+
+// Exclure les prepayments dans les statuts ci-dessous (Non payé et Annulé)
+define('PREPAYMENT_STATUT_EXCLUSION', '1,5');
 ?>
