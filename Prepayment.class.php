@@ -206,8 +206,10 @@ class Prepayment extends PluginsPaiements {
                 $prepayment_commande = new Prepayment_commande();
 
                 // On vérifie si le calcul de crédit est déja fait pour ce type de prepayment, sinon on le calcul
-                if(!array_key_exists($prepayment_produit->prepayment_id, $credit))
-                    $credit[$prepayment_produit->prepayment_id] = $prepayment_commande->credit_total($commande->client, $prepayment_produit->prepayment_id);
+                if(!array_key_exists($prepayment_produit->prepayment_id, $credit)){
+                    $total = $prepayment_commande->credit_total($commande->client, $prepayment_produit->prepayment_id);
+                    $credit[$prepayment_produit->prepayment_id] = ($total !== null) ? $total : 0;
+                }
 
                 // vérifier si le crédit est suffisant
                 $this->charger_id($prepayment_produit->prepayment_id);
@@ -333,8 +335,10 @@ class Prepayment extends PluginsPaiements {
                 $prepayment_commande = new Prepayment_commande();
 
                 // On vérifie si le calcul de crédit est déja fait pour ce type de prepayment, sinon on le calcul
-                if(!array_key_exists($prepayment_produit->prepayment_id, $credit))
-                    $credit[$prepayment_produit->prepayment_id] = $prepayment_commande->credit_total($client->id, $prepayment_produit->prepayment_id);
+                if(!array_key_exists($prepayment_produit->prepayment_id, $credit)) {
+                    $total = $prepayment_commande->credit_total($client->id, $prepayment_produit->prepayment_id);
+                    $credit[$prepayment_produit->prepayment_id] = ($total !== null) ? $total : 0;
+                }
 
                 // vérifier si le crédit est suffisant
                 $this->charger_id($prepayment_produit->prepayment_id);
@@ -479,7 +483,7 @@ class Prepayment extends PluginsPaiements {
             // Calcul du total de crédit
             $total = $prepayment_commande->credit_total($pre_cmd->client_id, $pre_cmd->prepayment_id);
 
-            if($this->charger_id($pre_cmd->prepayment_id))
+            if($this->charger_id($pre_cmd->prepayment_id) && $total !== null)
             {
                 $caracteristiquedesc = new Caracteristiquedesc($this->caracteristique_id);
 
@@ -498,7 +502,7 @@ class Prepayment extends PluginsPaiements {
 
                 // Substitutions
                 $tmp = str_replace("#LABEL", $caracteristiquedesc->titre, $tmp);
-                $tmp = str_replace("#CREDIT", intval($total) > 0 ? "$valeur" : "-$valeur", $tmp);
+                $tmp = str_replace("#CREDIT", "$valeur", $tmp);
 
                 $return .= $tmp;
             }

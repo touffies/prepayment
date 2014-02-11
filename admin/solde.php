@@ -25,9 +25,10 @@
         $fond = 'claire';
         foreach($result as $row) {
             $client = new Client($row->client_id);
+
             $total = $prepayment_commande->credit_total($client->id, $row->prepayment_id);
             $prepayment = new Prepayment();
-            if($prepayment->charger_id($row->prepayment_id))
+            if($prepayment->charger_id($row->prepayment_id) && $total !== null)
             {
                 $caracteristiquedesc = new Caracteristiquedesc($prepayment->caracteristique_id);
                 ?>
@@ -49,7 +50,7 @@
                         if(intval($total) > 0 ) {
                             echo($caracteristiquedesc->titre . " <span style=\"background-color:green;color:#fff; padding:2px 6px;\">".$valeur."</span");
                         } else {
-                            echo($caracteristiquedesc->titre . " <span style=\"background-color:red;color:#fff; padding:2px 5px;\">-".$valeur."</span");
+                            echo($caracteristiquedesc->titre . " <span style=\"background-color:red;color:#fff; padding:2px 5px;\">".$valeur."</span");
                         } ?>
                     </li>
                 </ul>

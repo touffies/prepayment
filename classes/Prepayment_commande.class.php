@@ -108,7 +108,7 @@ class Prepayment_commande extends Baseobj {
         $query = "SELECT co.id, SUM(CASE WHEN pc.type = ".$type_credit." THEN +pc.valeur ELSE -pc.valeur END) AS Total FROM $this->table pc INNER JOIN ".Commande::TABLE." co ON co.id = pc.commande_id WHERE pc.client_id = $client_id AND pc.prepayment_id = $prepayment_id AND co.statut NOT IN ($statut_exclusion)";
         $res = $this->query($query);
 
-        return $res ? $this->get_result($res,0,"Total") : 0;
+        return $res ? $this->get_result($res,0,"Total") : null;
     }
 
 
