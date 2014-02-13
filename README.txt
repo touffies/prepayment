@@ -77,12 +77,14 @@ Cette boucle permet de proposer le type de paiement prépayé au client en fonct
 
 **Paramètres:**
 
- - Aucun
+ - id : Identifiant d'un plugin de transport
+ - exlcusion :  Liste de nom à exclure, sépraré par une virgule ","
 
 **Variables:**
 
 ```
-#EXCLUSION  : Liste des modules de paiement à exclure (l'exclusion se fait sur le nom, exemple : exclusion="atos,cheque" )
+   #ID : Identifiant du plugin de paiement
+   #EXCLUSION : Liste des modules de paiement à exclure (l'exclusion se fait sur le nom, exemple : exclusion="atos,cheque" )
 ```
 
 Exemples d'utilisation, pour afficher la liste des vidéos en location sur la page `commande.html` :
@@ -92,8 +94,8 @@ Exemples d'utilisation, pour afficher la liste des vidéos en location sur la pa
 <div class="choixDuReglement">
     <ul>
         <THELIA_prepayment type="PREPAYMENT" boucle="paiement">
-            <THELIA_PAIEMENT type="PAIEMENT" exclusion="#EXCLUSION">
-                <li><a href="#URLPAYER"><span class="modeDeReglement">#TITRE</span><span class="choisir"></span></a>
+            <THELIA_PAIEMENT type="PAIEMENT" exclusion="#EXCLUSION" id="#ID">
+                <li><a href="#URLPAYER"><span class="modeDeReglement">#TITRE</span><span class="choisir"></span></a></li>
             </THELIA_PAIEMENT>
         </THELIA_prepayment>
     </ul>
@@ -162,6 +164,7 @@ vous pouvez modifier le montant minimum, en modifiant la valeur de la constante 
 CHANGELOG
 ---------
 
+- **1.0.3** (13/02/2014) - Modification de la boucle de paiement
 - **1.0.2** (11/02/2014) - Ajout d'une constante pour filtrer les statuts (Non Payé et Annulé)
 - **1.0.1** (10/02/2014) - Ajout du fichier Readme.md (Markdown)
 - **1.0.0** (06/02/2014) - Première version du plugin

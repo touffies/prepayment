@@ -276,12 +276,12 @@ class Prepayment extends PluginsPaiements {
             }
 
             ActionsModules::instance()->appel_module("confirmation", $commande);
-            $fond_succes = defined('PREPAYMENT_URL_SUCCES') ? PREPAYMENT_URL_SUCCES : "moncompte";
+            $fond_succes = defined('PREPAYMENT_URL_SUCCES') ? PREPAYMENT_URL_SUCCES : "merci";
             header("Location: " . urlfond($fond_succes));
             exit;
 
         } else {
-            $fond_erreur = defined('PREPAYMENT_URL_ERREUR') ? PREPAYMENT_URL_ERREUR : "commande";
+            $fond_erreur = defined('PREPAYMENT_URL_ERREUR') ? PREPAYMENT_URL_ERREUR : "regret";
             header("Location: " . urlfond($fond_erreur));
             exit;
         }
@@ -320,53 +320,72 @@ class Prepayment extends PluginsPaiements {
     private function bouclePaiement($texte, $args)
     {
 
-        $exclusion = "";
-        $port = $_SESSION['navig']->commande->port;
-        $credit = array();
+        // Récupération des arguments
+        $id = lireTag($args, "id", "int");
+        $exclusion = lireTag($args, "exclusion", "string_list");
 
-        // On vérifie si on peut utiliser le mode de paiement prépayé
-        foreach($_SESSION['navig']->panier->tabarticle as &$art)
+        if($id == "")
         {
-            $prepayment_produit = new Prepayment_produit();
-            if($prepayment_produit->charger_produit($art->produit->id))
+
+            // Tableau temporaire
+            $arrExclusion = array();
+            if($exclusion != "")
+                $arrExclusion = explode(",", $exclusion);
+
+            $port = $_SESSION['navig']->commande->port;
+            $credit = array();
+
+            // On vérifie si on peut utiliser le mode de paiement prépayé
+            foreach($_SESSION['navig']->panier->tabarticle as &$art)
             {
-                // On vérifie si le client à suffisamment de crédit
-                $client = $_SESSION['navig']->client;
-                $prepayment_commande = new Prepayment_commande();
+                $prepayment_produit = new Prepayment_produit();
+                if($prepayment_produit->charger_produit($art->produit->id))
+                {
+                    // On vérifie si le client à suffisamment de crédit
+                    $client = $_SESSION['navig']->client;
+                    $prepayment_commande = new Prepayment_commande();
 
-                // On vérifie si le calcul de crédit est déja fait pour ce type de prepayment, sinon on le calcul
-                if(!array_key_exists($prepayment_produit->prepayment_id, $credit)) {
-                    $total = $prepayment_commande->credit_total($client->id, $prepayment_produit->prepayment_id);
-                    $credit[$prepayment_produit->prepayment_id] = ($total !== null) ? $total : 0;
-                }
+                    // On vérifie si le calcul de crédit est déja fait pour ce type de prepayment, sinon on le calcul
+                    if(!array_key_exists($prepayment_produit->prepayment_id, $credit)) {
+                        $total = $prepayment_commande->credit_total($client->id, $prepayment_produit->prepayment_id);
+                        $credit[$prepayment_produit->prepayment_id] = ($total !== null) ? $total : 0;
+                    }
 
-                // vérifier si le crédit est suffisant
-                $this->charger_id($prepayment_produit->prepayment_id);
-                $type_quantite = defined('PREPAYMENT_TYPE_QUANTITE') ? PREPAYMENT_TYPE_QUANTITE : 1;
-                switch ($this->type) {
-                    case $type_quantite:
-                        $debit = $art->quantite;
-                        break;
-                    default:
-                        $debit = $art->produit->prix - $port; // On déduit aussi les frais de port (1 seul fois)
-                        $port = 0;
-                }
+                    // vérifier si le crédit est suffisant
+                    $this->charger_id($prepayment_produit->prepayment_id);
+                    $type_quantite = defined('PREPAYMENT_TYPE_QUANTITE') ? PREPAYMENT_TYPE_QUANTITE : 1;
+                    switch ($this->type) {
+                        case $type_quantite:
+                            $debit = $art->quantite;
+                            break;
+                        default:
+                            $debit = $art->produit->prix - $port; // On déduit aussi les frais de port (1 seul fois)
+                            $port = 0;
+                    }
 
-                $prepayment_minimum = defined('PREPAYMENT_MINIMUM') ? PREPAYMENT_MINIMUM : 0;
-                $credit[$prepayment_produit->prepayment_id] -= $debit;
-                if ($credit[$prepayment_produit->prepayment_id] < $prepayment_minimum) {
-                    $exclusion = self::MODULE.",";
+                    $prepayment_minimum = defined('PREPAYMENT_MINIMUM') ? PREPAYMENT_MINIMUM : 0;
+                    $credit[$prepayment_produit->prepayment_id] -= $debit;
+                    if ($credit[$prepayment_produit->prepayment_id] < $prepayment_minimum) {
+                        $arrExclusion[] =  self::MODULE;
+                        break 1;
+                    }
+                } else {
+                    // On arrête et on exclue ce module car le panier contient des produits n'acceptant pas le mode de paiement prépayé
+                    $arrExclusion[] =  self::MODULE;
                     break 1;
                 }
-            } else {
-                // On arrête et on exclue ce module car le panier contient des produits n'acceptant pas le mode de paiement prépayé
-                $exclusion = self::MODULE.",";
-                break 1;
             }
+
+            // Substitutions
+            $texte = str_replace("#ID", "", $texte);
+            $texte = str_replace("#EXCLUSION", implode(",", $arrExclusion), $texte);
+
+            return $texte;
         }
 
         // Substitutions
-        $texte = str_replace("#EXCLUSION", $exclusion, $texte);
+        $texte = str_replace("#ID", $id, $texte);
+        $texte = str_replace("#EXCLUSION", "", $texte);;
 
         return $texte;
     }
