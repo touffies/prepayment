@@ -429,7 +429,7 @@ class Prepayment extends PluginsPaiements {
 
                 } else {
                     $caracval = new Caracval();
-                    $query = "SELECT count(*) AS nb FROM $caracval->table WHERE produit = " . intval($art->produit->id);
+                    $query = "SELECT count(*) AS nb FROM $caracval->table WHERE produit = " . intval($art->produit->id) . " AND caracteristique IN (SELECT caracteristique_id FROM ".Prepayment::TABLE.")";
                     $res = $caracval->query($query);
                     $nb = $res ? $this->get_result($res,0,"nb") : 0;
 
