@@ -25,6 +25,8 @@
 /*************************************************************************************/
 
 // Constante
+defined('PREPAYMENT_ID', 1);
+
 define("PREPAYMENT_CREDIT", 1);
 define("PREPAYMENT_DEBIT", 2);
 
