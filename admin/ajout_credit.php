@@ -2,14 +2,14 @@
 	<a href="accueil.php" class="lien04"><?php echo trad('Accueil', 'admin'); ?></a> <img src="gfx/suivant.gif" width="12" height="9" border="0" />
 	<a href="module_liste.php" class="lien04"><?php echo trad('Modules', 'admin'); ?></a> <img src="gfx/suivant.gif" width="12" height="9" border="0" />
 	<a href="module.php?nom=prepayment" class="lien04"><?php echo trad('Prépaiement', 'prepayment'); ?></a> <img src="gfx/suivant.gif" width="12" height="9" border="0" />
-	<span style="color: #4E6172; font-size: 12px;margin-left:3px;"><?php echo trad('Historique', 'prepayment'); ?></span>
+	<span style="color: #4E6172; font-size: 12px;margin-left:3px;"><?php echo trad('Ajout de Credit', 'prepayment'); ?></span>
 </p>
 
 <div id="bloc_description">
 	<div class="entete_liste_config">
 		<div class="titre"><?php echo trad('Ajout de Credit' , 'prepayment'); ?></div>
 		<div class="fonction_valider">
-			<a onclick="$('#frm_configuration').submit(); $(this).removeAttr('onclick').css( 'cursor', 'progress' ); return false;" href="#"><?php echo trad('VALIDER LES MODIFICATIONS', 'admin'); ?></a>
+			<a onclick="$('#frm_configuration').submit(); $(this).removeAttr('onclick').css( 'cursor', 'progress' ); return false;" href="#"><?php echo trad('VALIDER', 'admin'); ?></a>
 		</div>
 	</div>
 	
@@ -25,4 +25,13 @@
             </ul>
         </form>
 	</div>
+	<?php
+		if($_SESSION['return']=="ok"):
+		unset($_SESSION['return']);
+	?>
+		<br clear="both" />
+		<p style="color:green;">Le crédit a bien été ajouté à tous les Clients</p>
+	<?php
+		endif;
+	?>
 </div>

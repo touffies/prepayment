@@ -47,6 +47,7 @@ if(isset($action))
                 $prepayment_commande->valeur = $credit_value;
                 $prepayment_commande->add();
             }
+            $_SESSION['return']= 'ok';
         }
     }
 
