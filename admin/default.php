@@ -13,7 +13,7 @@
         <li class="fonce" style="width:50px;"><a href="module.php?nom=prepayment&action_prepayment=historique"><?php echo trad('éditer'); ?> </a></li>
         <li class="claire" style="width:390px; background-color:#9eb0be;border-bottom: 1px dotted #FFF;"><?php echo trad('Solde', 'prepayment'); ?></li>
         <li class="claire" style="width:50px;"><a href="module.php?nom=prepayment&action_prepayment=solde"><?php echo trad('éditer'); ?> </a></li>
-         <li class="fonce" style="width:390px; background-color:#9eb0be;border-bottom: 1px dotted #FFF;"><?php echo trad('Ajout de crédit', 'prepayment'); ?></li>
+         <li class="fonce" style="width:390px; background-color:#9eb0be;border-bottom: 1px dotted #FFF;"><?php echo trad('Gestion du crédit', 'prepayment'); ?></li>
         <li class="fonce" style="width:50px;"><a href="module.php?nom=prepayment&action_prepayment=ajout_credit"><?php echo trad('éditer'); ?> </a></li>
 	</ul>
 </div>
