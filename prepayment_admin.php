@@ -49,7 +49,9 @@ include_once __DIR__ . "/admin/action.php";
         case 'solde' :
             include_once(__DIR__ . "/admin/solde.php");
             break;
-
+        case 'ajout_credit' :
+            include_once(__DIR__ . "/admin/ajout_credit.php");
+            break;
         default:
 			include_once(__DIR__ . "/admin/default.php");
 	}

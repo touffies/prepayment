@@ -43,12 +43,13 @@ class Prepayment_commande extends Baseobj {
     public $client_id;
     public $type;
     public $valeur;
+    public $date;
 
 	const TABLE = "prepayment_commande";
 
 	public $table = self::TABLE;
 
-	public $bddvars = array("id", "prepayment_id", "commande_id", "client_id", "type", "valeur");
+	public $bddvars = array("id", "prepayment_id", "commande_id", "client_id", "type", "valeur", "date");
 
     /**
      * Constructeur
@@ -61,7 +62,20 @@ class Prepayment_commande extends Baseobj {
 
 		if (intval($id) > 0) $this->charger($id);
 	}
-
+    
+     /**
+     * On surcharge la fonction add pour ajouter la date à chaque ajout
+     *
+     * @return int id 
+     */
+    function add()
+    {
+        $this->date = date("Y-m-d H:i:s");
+        $this->id = parent::add();
+        $this->maj();
+        return $this->id;
+    }
+    
     /**
      * Chargé un objet Prepayment_commande en fonction dde l'identifiant d'une commande
      *
@@ -88,6 +102,7 @@ class Prepayment_commande extends Baseobj {
 			 `client_id` INT UNSIGNED NOT NULL ,
 		  	 `type` TINYINT(1) UNSIGNED NOT NULL,
 		  	 `valeur` FLOAT NOT NULL,
+		  	 `date` DATETIME,
 			PRIMARY KEY (  `id` )
 			) AUTO_INCREMENT=1 ;";
 
@@ -108,9 +123,8 @@ class Prepayment_commande extends Baseobj {
 
         $type_credit = defined('PREPAYMENT_CREDIT') ? PREPAYMENT_CREDIT : 1;
         $statut_exclusion = defined('PREPAYMENT_STATUT_EXCLUSION') ? PREPAYMENT_STATUT_EXCLUSION : '1,5';
-        $query = "SELECT co.id, SUM(CASE WHEN pc.type = ".$type_credit." THEN +pc.valeur ELSE -pc.valeur END) AS Total FROM $this->table pc INNER JOIN ".Commande::TABLE." co ON co.id = pc.commande_id WHERE pc.client_id = $client_id AND pc.prepayment_id = $prepayment_id AND co.statut NOT IN ($statut_exclusion)";
+        $query = "SELECT co.id, SUM(CASE WHEN pc.type = ".$type_credit." THEN +pc.valeur ELSE -pc.valeur END) AS Total FROM $this->table pc LEFT OUTER JOIN ".Commande::TABLE." co ON co.id = pc.commande_id WHERE pc.client_id = $client_id AND pc.prepayment_id = $prepayment_id AND (co.statut NOT IN ($statut_exclusion) OR pc.commande_id = 0)";
         $res = $this->query($query);
-
         return $res ? $this->get_result($res,0,"Total") : null;
     }
 

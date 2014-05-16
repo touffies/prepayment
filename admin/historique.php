@@ -1,3 +1,21 @@
+<?php
+    $prepayment_commande = new Prepayment_commande();
+    if($page=="") $page=1;
+    
+    $query = "select count(*) from $prepayment_commande->table";
+  	$resul = mysql_query($query, $prepayment_commande->link);
+  	$num = mysql_result($resul,0);
+  	$nbpage = 20;
+  	$totnbpage = ceil($num/20);
+
+  	$debut = ($page-1) * 20;
+
+  	if($page>1) $pageprec=$page-1;
+  	else $pageprec=$page;
+
+  	if($page<$totnbpage) $pagesuiv=$page+1;
+  	else $pagesuiv=$page;
+?>
 <p>
 	<a href="accueil.php" class="lien04"><?php echo trad('Accueil', 'admin'); ?></a> <img src="gfx/suivant.gif" width="12" height="9" border="0" />
 	<a href="module_liste.php" class="lien04"><?php echo trad('Modules', 'admin'); ?></a> <img src="gfx/suivant.gif" width="12" height="9" border="0" />
@@ -20,8 +38,7 @@
 
 <div class="bordure_bottom">
     <?php
-    $prepayment_commande = new Prepayment_commande();
-    $pre_commandes = $prepayment_commande->query_liste("SELECT * FROM $prepayment_commande->table ORDER BY id DESC");
+    $pre_commandes = $prepayment_commande->query_liste("SELECT * FROM $prepayment_commande->table ORDER BY id DESC limit $debut,20");
 
     if(count($pre_commandes) > 0)
     {
@@ -38,7 +55,14 @@
             ?>
             <ul class="ligne_<?php echo $fond; ?>_rub">
                 <li style="width:30px;"><?php echo $pre_commande->id; ?></li>
-                <li style="width:150px;"><?php echo strftime("%d/%m/%Y %H:%M:%S", strtotime($commande->date)); ?></li>
+                <li style="width:150px;"><?php 
+                    if(is_null($pre_commande->date)){
+                        echo strftime("%d/%m/%Y %H:%M:%S", strtotime($commande->date));
+                    }
+                    else{
+                        echo strftime("%d/%m/%Y %H:%M:%S", strtotime($pre_commande->date));
+                    }
+                ?></li>
                 <li style="width:190px;"><?php echo $caracteristiquedesc->titre; ?></li>
                 <li style="width:60px;"><?php
                 $prepayment = new Prepayment($pre_commande->prepayment_id);
@@ -74,5 +98,36 @@
     ?>
 </div>
 
+<br clear="both"/>
+<p id="pages">
+<?php if($page>1){ ?>
+<a href="<?php echo($_SERVER['PHP_SELF']); ?>?nom=prepayment&action_prepayment=historique&page=<?php echo($pageprec); ?>">Page précédente</a> |
+<?php } ?>
+<?php if($totnbpage > $nbpage){?>
+	<?php if($page>1) {?><a href="<?php echo($_SERVER['PHP_SELF']); ?>?nom=prepayment&action_prepayment=historique&page=1">...</a> | <?php } ?>
+	<?php if($page+$nbpage-1 > $totnbpage){ $max = $totnbpage; $min = $totnbpage-$nbpage;} else{$min = $page-1; $max=$page+$nbpage-1; }?>
+<?php for($i=$min; $i<$max; $i++){ ?>
+	 <?php if($page != $i+1){ ?>
+	  		 <a href="<?php echo($_SERVER['PHP_SELF']); ?>?nom=prepayment&action_prepayment=historique&page=<?php echo($i+1); ?>"><?php echo($i+1); ?></a> |
+	 <?php } else {?>
+		  <span class="selected"><?php echo($i+1); ?></span>
+		|
+		  <?php } ?>
+<?php } ?>
+	<?php if($page < $totnbpage){?><a href="<?php echo($_SERVER['PHP_SELF']); ?>?nom=prepayment&action_prepayment=historique&page=<?php echo $totnbpage; ?>">...</a> | <?php } ?>
+<?php }
+else{
+	for($i=0; $i<$totnbpage; $i++){ ?>
+    	 <?php if($page != $i+1){ ?>
+  	  		 <a href="<?php echo($_SERVER['PHP_SELF']); ?>?nom=prepayment&action_prepayment=historique&page=<?php echo($i+1); ?>"><?php echo($i+1); ?></a> |
+    	 <?php } else {?>
+    		 <span class="selected"><?php echo($i+1); ?></span>
+    		 |
+   		  <?php } ?>
+     <?php } ?>
+<?php } ?>
 
 
+<?php if($page < $totnbpage){ ?>
+<a href="<?php echo($_SERVER['PHP_SELF']); ?>?nom=prepayment&action_prepayment=historique&page=<?php echo($pagesuiv); ?>">Page suivante</a></p>
+<?php } ?>
