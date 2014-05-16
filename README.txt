@@ -164,6 +164,7 @@ vous pouvez modifier le montant minimum, en modifiant la valeur de la constante 
 CHANGELOG
 ---------
 
+- **1.1**   (16/05/2014) - Ajout de pagination + Correction du bug qui efface les données de la table de liaison
 - **1.0.4** (13/02/2014) - Correction ISSUE #1 - Modification d'une requête dans la boucle Transport
 - **1.0.3** (13/02/2014) - Modification de la boucle de paiement
 - **1.0.2** (11/02/2014) - Ajout d'une constante pour filtrer les statuts (Non Payé et Annulé)
