@@ -55,7 +55,14 @@
             ?>
             <ul class="ligne_<?php echo $fond; ?>_rub">
                 <li style="width:30px;"><?php echo $pre_commande->id; ?></li>
-                <li style="width:150px;"><?php echo strftime("%d/%m/%Y %H:%M:%S", strtotime($commande->date)); ?></li>
+                <li style="width:150px;"><?php 
+                    if(is_null($pre_commande->date)){
+                        echo strftime("%d/%m/%Y %H:%M:%S", strtotime($commande->date));
+                    }
+                    else{
+                        echo strftime("%d/%m/%Y %H:%M:%S", strtotime($pre_commande->date));
+                    }
+                ?></li>
                 <li style="width:190px;"><?php echo $caracteristiquedesc->titre; ?></li>
                 <li style="width:60px;"><?php
                 $prepayment = new Prepayment($pre_commande->prepayment_id);
