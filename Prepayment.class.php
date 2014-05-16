@@ -159,24 +159,26 @@ class Prepayment extends PluginsPaiements {
      */
     public function modprod(Produit $produit)
     {
-        $select_prepayment = trim(lireParam("select_prepayment", "int"));
-
-        // On met à jour la table de liaison prepayment_produit
-        $prepayment_produit = new Prepayment_produit();
-
-        // On ne peut associer qu'un prepayment
-        if($prepayment_produit->charger_produit($produit->id))
-            $prepayment_produit->delete_produit($produit->id);
-
-
-        // Une caractéristique de prépaiement est séléctionnée
-        if (intval($select_prepayment) > 0)
-        {
-            // On ajoute une entrée
+        // On teste l'existence du champs pour ne pas effacer les données lors des requêtes en ajax
+        if(isset($_REQUEST['select_prepayment'])){
+            $select_prepayment = trim(lireParam("select_prepayment", "int"));
+            
+            // On met à jour la table de liaison prepayment_produit
             $prepayment_produit = new Prepayment_produit();
-            $prepayment_produit->produit_id = $produit->id;
-            $prepayment_produit->prepayment_id = $select_prepayment;
-            $prepayment_produit->add();
+    
+            // On ne peut associer qu'un prepayment
+            if($prepayment_produit->charger_produit($produit->id))
+                $prepayment_produit->delete_produit($produit->id);
+    
+            // Une caractéristique de prépaiement est séléctionnée
+            if (intval($select_prepayment) > 0)
+            {
+                // On ajoute une entrée
+                $prepayment_produit = new Prepayment_produit();
+                $prepayment_produit->produit_id = $produit->id;
+                $prepayment_produit->prepayment_id = $select_prepayment;
+                $prepayment_produit->add();
+            }
         }
     }
 
