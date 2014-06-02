@@ -33,6 +33,10 @@ if(isset($action))
         $credit_value = trim(lireParam("credit_value", "int"));
         $client_id = trim(lireParam("client_id", "string"));
         
+        $emailfrom = Variable::lire("emailfrom");
+		$nomsite = Variable::lire("nomsite");
+
+        
         if (intval($credit_value) > 0)
         {
             if($client_id=="all"){
@@ -47,6 +51,7 @@ if(isset($action))
                     $prepayment_commande->type = defined('PREPAYMENT_CREDIT') ? PREPAYMENT_CREDIT : 1;
                     $prepayment_commande->valeur = $credit_value;
                     $prepayment_commande->add();
+                    envoyer_mail_credit($client_id, $emailfrom, $nomsite, $credit_value);
                 }
             }
             else{
@@ -57,6 +62,8 @@ if(isset($action))
                 $prepayment_commande->type = defined('PREPAYMENT_CREDIT') ? PREPAYMENT_CREDIT : 1;
                 $prepayment_commande->valeur = $credit_value;
                 $prepayment_commande->add();
+                envoyer_mail_credit($client_id, $emailfrom, $nomsite, $credit_value);
+                
             }
             
             $_SESSION['return']= 'ok';
@@ -65,5 +72,23 @@ if(isset($action))
 
     // Redirection
     redirige($_REQUEST['redirect'] ? $_REQUEST['redirect'] : "module.php?nom=prepayment");
+    
+    
+}
+
+function envoyer_mail_credit($client_id, $emailfrom, $nomsite,$credit_value ){
+	$message = new Message("mailCreditInscription");
+	
+	$messagedesc = new Messagedesc();
+	$messagedesc->charger($message->id);
+
+    $client = new Client($client_id);
+	$mailclient = new Mail();
+	$mailclient->envoyer(
+	$client->nom." ".$client->prenom, $client->email,
+	$nomsite, $emailfrom,
+	$messagedesc->intitule,
+	$messagedesc->description, $messagedesc->descriptiontext);
+	
 }
 ?>
