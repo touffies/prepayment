@@ -97,6 +97,44 @@ class Prepayment extends PluginsPaiements {
 			PRIMARY KEY (  `id` )
 			) AUTO_INCREMENT=1 ;";
         $this->query($query);
+        
+        $soldeCredit = new Variable("soldeCreditInit");
+		if (!$soldeCredit->charger("soldeCreditInit")) {
+			
+			$code = gencode(30);
+
+			$soldeCredit->nom = "soldeCreditInit";
+			$soldeCredit->valeur = 0;
+			$soldeCredit->protege = 1;
+			$soldeCredit->add();
+		}
+		
+		$message = new Message();
+		
+		if (! $message->charger("mailCreditInscription")) {
+
+			$message->nom = "mailCreditInscription";
+			$lastid = $message->add();
+
+			$messagedesc = new Messagedesc();
+			$messagedesc->message = $lastid;
+
+			$messagedesc->lang = 1;
+			$messagedesc->intitule = "Crédits mail";
+			$messagedesc->titre    = "Votre compte est crédité";
+
+			$messagedesc->chapo = "";
+
+			$messagedesc->description =
+				  "Description  HTML du mail a envoyer";
+
+			$messagedesc->descriptiontext =
+				  " Description du mail a envoyer ";
+				
+
+
+			$messagedesc->add();
+		}
 
         // On initialise
         $prepayment_produit = new Prepayment_produit();
@@ -555,6 +593,22 @@ class Prepayment extends PluginsPaiements {
     function destroy()
     {
         // Rien
+    }
+    
+    function apresclient($client){
+    	$variable = new Variable("soldeCreditInit");
+    	if ($variable->charger("soldeCreditInit")) {
+			$prepayment_commande = new Prepayment_commande();
+	        $prepayment_commande->prepayment_id = 1;
+	        $prepayment_commande->commande_id = 0;
+	        $prepayment_commande->client_id = $client->id;
+	        $prepayment_commande->type = defined('PREPAYMENT_CREDIT') ? PREPAYMENT_CREDIT : 1;
+	        $prepayment_commande->valeur = $variable->valeur;
+	        $prepayment_commande->add();
+	        
+	        
+		}
+    	
     }
 }
 ?>
